@@ -118,10 +118,14 @@ void loop()
       sensorRoll = yawPitchRollSensorData[2] * RAD_TO_DEG;
 
       // receive remote control set points
-      setpointRoll = 0;
-      setpointPitch = 0;
-      setpointYaw = 0;
-      setpointThrottle = 20;
+      setpointRoll = 50;
+      setpointRoll = map(setpointRoll, 0, 100, 1000, 2000);
+      setpointPitch = 50;
+      setpointPitch = map(setpointPitch, 0, 100, 1000, 2000);
+      setpointYaw = 50;
+      setpointYaw = map(setpointYaw, 0, 100, 1000, 2000);
+      setpointThrottle = 50;
+      throttle = map(setpointThrottle, 0, 100, 1000, 2000);
 
       // calculate pids
       if(abs(sensorRoll - setpointRoll) < 10)
@@ -158,7 +162,6 @@ void loop()
       yawPID.Compute();
 
       // calculate escs
-      throttle = map(setpointThrottle, 0, 100, 1000, 2000);
       throttle = min(throttle, 1800);
       esc1 = throttle - pitch + roll - yaw; //Calculate the pulse for esc 1 (front-right - CCW)
       esc2 = throttle + pitch + roll + yaw; //Calculate the pulse for esc 2 (rear-right - CW)
