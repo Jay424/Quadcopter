@@ -1,3 +1,10 @@
+/**********************************************************************************************
+ * Quadcopter control v0.1
+ * by Jakob Murschall
+ *
+ * This Library is licensed under a GPLv3 License
+ **********************************************************************************************/
+
 #include <PID_v1.h>
 
 class PIDWrapper{

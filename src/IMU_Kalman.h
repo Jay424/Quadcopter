@@ -1,3 +1,10 @@
+/**********************************************************************************************
+ * Quadcopter control v0.1
+ * by Jakob Murschall
+ *
+ * This Library is licensed under a GPLv3 License
+ **********************************************************************************************/
+
 #include <MPU6050.h>
 #include <Kalman.h>
 #include <math.h>

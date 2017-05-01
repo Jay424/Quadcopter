@@ -1,3 +1,10 @@
+/**********************************************************************************************
+ * Quadcopter control v0.1
+ * by Jakob Murschall
+ *
+ * This Library is licensed under a GPLv3 License
+ **********************************************************************************************/
+
 #include <Motor.h>
 
 void Motor::Setup(int motorPin) {
