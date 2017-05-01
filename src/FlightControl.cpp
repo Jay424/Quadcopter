@@ -30,7 +30,7 @@ void setup() {
   Serial.begin(115200);
   Wire.begin();
 
-  imu.setup();
+  imu.Setup();
 
   Serial.print("Setting up motors ...");
   motor1.Setup(ch1);

@@ -15,6 +15,6 @@ class IMU_Kalman {
       float yaw;
     };
 
-    void setup();
+    void Setup();
     RollPitchYaw CalculateRollPitchYaw();
 };

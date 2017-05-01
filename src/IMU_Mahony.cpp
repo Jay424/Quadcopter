@@ -1,6 +1,6 @@
 #include <IMU_Mahony.h>
 
-void IMU_Mahony::setup() {
+void IMU_Mahony::Setup() {
   Serial.print("Initializing MPU 6050...");
   mpu.initialize();
   Serial.println(" done");

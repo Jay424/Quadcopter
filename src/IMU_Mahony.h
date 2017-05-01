@@ -14,6 +14,6 @@ class IMU_Mahony {
       float yaw;
     };
 
-    void setup();
+    void Setup();
     RollPitchYaw CalculateRollPitchYaw();
 };

@@ -1,6 +1,6 @@
 #include <IMU_Kalman.h>
 
-void IMU_Kalman::setup() {
+void IMU_Kalman::Setup() {
   Serial.print("Initializing MPU 6050...");
   mpu.initialize();
   Serial.println(" done");
