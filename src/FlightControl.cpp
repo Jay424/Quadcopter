@@ -32,12 +32,10 @@ void setup() {
 
   imu.Setup();
 
-  Serial.print("Setting up motors ...");
   motor1.Setup(ch1);
   motor2.Setup(ch2);
   motor3.Setup(ch3);
   motor4.Setup(ch4);
-  Serial.println("done");
 }
 
 void loop() {

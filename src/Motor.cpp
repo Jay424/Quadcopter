@@ -8,7 +8,11 @@
 #include <Motor.h>
 
 void Motor::Setup(int motorPin) {
+  Serial.print("Setting up motor on pin ");
+  Serial.print(motorPin);
+  Serial.print(" ... ");
   motor.attach(motorPin);
+  Serial.println("done");
 }
 
 void Motor::SetSpeed(double speed) {
