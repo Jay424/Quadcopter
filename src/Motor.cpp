@@ -6,6 +6,7 @@
  **********************************************************************************************/
 
 #include <Motor.h>
+#include <Arduino.h>
 
 void Motor::Setup(int motorPin) {
   Serial.print("Setting up motor on pin ");

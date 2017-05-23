@@ -5,22 +5,16 @@
  * This Library is licensed under a GPLv3 License
  **********************************************************************************************/
 
-#include <MPU6050.h>
-#include <MahonyAHRS.h>
-
-class IMU_Mahony {
-  private:
-    MPU6050 mpu;
-    Mahony filter;
-
+class MPU9250
+{
   public:
     struct RollPitchYaw
     {
-      float roll;
-      float pitch;
-      float yaw;
+      double roll;
+      double pitch;
+      double yaw;
     };
 
     void Setup();
-    RollPitchYaw CalculateRollPitchYaw();
+    bool CalculateRollPitchYaw(RollPitchYaw *rpy);
 };

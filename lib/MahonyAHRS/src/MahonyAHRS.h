@@ -19,11 +19,11 @@
 
 class Mahony {
 private:
+	long lastUpdate;
 	float twoKp;		// 2 * proportional gain (Kp)
 	float twoKi;		// 2 * integral gain (Ki)
 	float q0, q1, q2, q3;	// quaternion of sensor frame relative to auxiliary frame
 	float integralFBx, integralFBy, integralFBz;  // integral error terms scaled by Ki
-	float invSampleFreq;
 	float roll, pitch, yaw;
 	char anglesComputed;
 	static float invSqrt(float x);
@@ -34,9 +34,7 @@ private:
 
 public:
 	Mahony();
-	void begin(float sampleFrequency) { invSampleFreq = 1.0f / sampleFrequency; }
 	void update(float gx, float gy, float gz, float ax, float ay, float az, float mx, float my, float mz);
-	void updateIMU(float gx, float gy, float gz, float ax, float ay, float az);
 	float getRoll() {
 		if (!anglesComputed) computeAngles();
 		return roll * 57.29578f;

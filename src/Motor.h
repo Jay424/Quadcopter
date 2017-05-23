@@ -7,10 +7,10 @@
 
 #include <Servo.h>
 
-class Motor {
+class Motor
+{
   private:
     Servo motor;
-
   public:
     void Setup(int motorPin);
     void SetSpeed(double speed);

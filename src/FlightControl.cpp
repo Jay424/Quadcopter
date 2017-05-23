@@ -4,21 +4,24 @@
  *
  * This Library is licensed under a GPLv3 License
  **********************************************************************************************/
-
 #include <Wire.h>
-#include <IMU_Mahony.h>
+#include <MPU9250.h>
 #include <PIDWrapper.h>
 #include <Motor.h>
+#include <Arduino.h>
 
-IMU_Mahony imu;
+MPU9250 imu;
 
-const double consKp = 0.75, consKi = 0.4, consKd = 0.08;
-const double aggKp = 0.875, aggKi = 0.5, aggKd = 0.1;
-const double consYawKp = 0, consYawKi = 0, consYawKd = 0.2;
-const double aggYawKp = 0, aggYawKi = 0, aggYawKd = 0.5;
-PIDWrapper rollPID(consKp, consKi, consKd, aggKp, aggKi, aggKd);
-PIDWrapper pitchPID(consKp, consKi, consKd, aggKp, aggKi, aggKd);
-PIDWrapper yawPID(consYawKp, consYawKi, consYawKd, aggYawKp, aggYawKi, aggYawKd);
+const double consKp = 3, consKi = 0.02, consKd = 0.45;
+const double aggKp = consKp * 2, aggKi = consKi * 2, aggKd = consKd * 2;
+const double consYawKp = consKp, consYawKi = consKi, consYawKd = consKd;
+const double aggYawKp = consYawKp * 2, aggYawKi = aggYawKi * 2, aggYawKd = consYawKi * 2;
+const double rollMinValue = -180, rollMaxValue = 180;
+PIDWrapper rollPID(consKp, consKi, consKd, aggKp, aggKi, aggKd, rollMinValue, rollMaxValue);
+const double pitchMinValue = -90, pitchMaxValue = 90;
+PIDWrapper pitchPID(consKp, consKi, consKd, aggKp, aggKi, aggKd, pitchMinValue, pitchMaxValue);
+const double yawMinValue = 0, yawMaxValue = 360;
+PIDWrapper yawPID(consYawKp, consYawKi, consYawKd, aggYawKp, aggYawKi, aggYawKd, yawMinValue, yawMaxValue);
 
 const int ch1 = 2;
 const int ch2 = 3;
@@ -26,38 +29,61 @@ const int ch3 = 4;
 const int ch4 = 5;
 Motor motor1, motor2, motor3, motor4;
 
-void setup() {
-  Serial.begin(115200);
+void setup()
+{
+  Serial.begin(9600);
   Wire.begin();
 
+  delay(3000);
+  Serial.println("Setup IMU");
   imu.Setup();
 
+  Serial.println("Setup Motors");
   motor1.Setup(ch1);
   motor2.Setup(ch2);
   motor3.Setup(ch3);
   motor4.Setup(ch4);
 }
 
+double modifiedMap(double x, double in_min, double in_max, double out_min, double out_max)
+{
+ double temp = (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+ temp = (int) (4*temp + .5);
+ return (double) temp/4;
+}
+
 void loop() {
     // receive current sensor data
-    IMU_Mahony::RollPitchYaw rpy = imu.CalculateRollPitchYaw();
+    MPU9250::RollPitchYaw rpy;
+    bool newData = imu.CalculateRollPitchYaw(&rpy);
+
+    if(!newData)
+    {
+      return;
+    }
 
     // receive remote control set points
     double setpointRoll, setpointPitch, setpointYaw, setpointThrottle;
-    setpointRoll = 50;
-    setpointRoll = map(setpointRoll, 0, 100, 1000, 2000);
-    setpointPitch = 50;
-    setpointPitch = map(setpointPitch, 0, 100, 1000, 2000);
-    setpointYaw = 50;
-    setpointYaw = map(setpointYaw, 0, 100, 1000, 2000);
-    setpointThrottle = 50;
-    setpointThrottle = map(setpointThrottle, 0, 100, 1000, 2000);
+    setpointRoll = 0.0;
+    setpointPitch = 0.0;
+    setpointYaw = 180.0;
+    setpointThrottle = 20.0;
 
     // calculate pids
     double roll, pitch, yaw;
     roll = rollPID.Compute(rpy.roll, setpointRoll);
     pitch = pitchPID.Compute(rpy.pitch, setpointPitch);
-    yaw = yawPID.Compute(rpy.yaw, setpointPitch);
+    yaw = yawPID.Compute(rpy.yaw, setpointYaw);
+
+    roll = modifiedMap(roll, rollMinValue, rollMaxValue, 1000.0, 2000.0);
+    pitch = modifiedMap(pitch, pitchMinValue, pitchMaxValue, 1000.0, 2000.0);
+    yaw = modifiedMap(yaw, yawMinValue, yawMaxValue, 1000.0, 2000.0);
+    setpointThrottle = modifiedMap(setpointThrottle, 0.0, 100.0, 1000.0, 2000.0);
+
+    Serial.print("roll: "); Serial.print(rpy.roll); Serial.print("\t");Serial.print(setpointRoll); Serial.print("\t"); Serial.print(roll);
+    Serial.print("\tpitch: "); Serial.print(rpy.pitch); Serial.print("\t");Serial.print(setpointPitch); Serial.print("\t"); Serial.print(pitch);
+    Serial.print("\tyaw: "); Serial.print(rpy.yaw); Serial.print("\t"); Serial.print(setpointYaw); Serial.print("\t");Serial.print(yaw);
+    Serial.println();
 
     // limit max throttle
     double throttle;
